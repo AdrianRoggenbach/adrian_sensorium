@@ -330,6 +330,12 @@ class FileTreeDatasetBase(TransformDataset):
 
         # verify that valid data path exists for each data_key and count number of files
         for data_key in data_keys:
+            if data_key not in ['behavior', 'images', 'pupil_center', 'responses']:
+                # only check the number of files for the standard experiment variables
+                # other data_keys do not have individual files per trial in data/ but
+                # only one combined file in merged_data => do not perform this check
+                continue
+                
             if data_key not in self.trial_info.keys():
                 datapath = self.resolve_data_path(data_key)
                 number_of_files.append(len(list(datapath.glob("*"))))

@@ -35,7 +35,8 @@ def static_loader(
     get_key: bool = False,
     cuda: bool = True,
     normalize: bool = True,
-    exclude: str = None,
+    # exclude: str = None,
+    exclude: list = [],
     include_behavior: bool = False,
     add_behavior_as_channels: bool = True,
     select_input_channel: int = None,
@@ -51,6 +52,7 @@ def static_loader(
     image_reshape_list=None,
     trial_idx_selection=None,
     preload_from_merged_data=False,
+    include_trial_id=False,
 ):
     """
     returns a single data loader
@@ -77,6 +79,8 @@ def static_loader(
         image_condition (str, or list of str, optional): selection of images based on the image condition
         preload_from_merged_data (bool, optional): Parameter to use data from .npy matrix with all trials instead of
                                                    indiviual files to speed up first run through the data
+        include_trial_id (bool, optional): Include trial_id in batch along with other data to reconstruct later
+                                           the order of the predictions from different split parts
                                                 
     Returns:
         if get_key is False returns a dictionary of dataloaders for one dataset, where the keys are 'train', 'validation', and 'test'.
@@ -120,6 +124,9 @@ def static_loader(
         data_keys.append("pupil_center")
     if include_trial_info_keys:
         data_keys.extend(include_trial_info_keys)
+    if include_trial_id:
+        data_keys.append("trial_id")
+        exclude.append('trial_id')  # exclude it from normalization
 
     if file_tree:
         dat = FileTreeDataset(path, *data_keys)
@@ -299,7 +306,8 @@ def static_loaders(
     normalize: bool = True,
     include_behavior: bool = False,
     add_behavior_as_channels: bool = True,
-    exclude: str = None,
+    # exclude: str = None,
+    exclude: list = [],
     select_input_channel: int = None,
     file_tree: bool = True,
     image_condition=None,
@@ -314,6 +322,7 @@ def static_loaders(
     image_reshape_list=None,
     trial_idx_selection=None,
     preload_from_merged_data=False,
+    include_trial_id=False,
 ):
     """
     Returns a dictionary of dataloaders (i.e., trainloaders, valloaders, and testloaders) for >= 1 dataset(s).
@@ -345,6 +354,9 @@ def static_loaders(
         add_trial_idx_to_batch (bool, optional): return the trial index of the samples with the batch data
         preload_from_merged_data (bool, optional): Parameter to use data from .npy matrix with all trials instead of
                                                    indiviual files to speed up first run through the data
+        include_trial_id (bool, optional): Include trial_id in batch along with other data to reconstruct later
+                                           the order of the predictions from different split parts
+                                           
     Returns:
         dict: dictionary of dictionaries where the first level keys are 'train', 'validation', and 'test', and second level keys are data_keys.
     """
@@ -399,6 +411,7 @@ def static_loaders(
             image_reshape_list=image_reshape_list,
             trial_idx_selection=trial_idx_selection,
             preload_from_merged_data=preload_from_merged_data,
+            include_trial_id=include_trial_id,
         )
         for k in dls:
             dls[k][out[0]] = out[1][k]

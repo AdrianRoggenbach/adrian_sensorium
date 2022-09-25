@@ -409,6 +409,9 @@ class AddBehaviorAsChannels(MovieTransform, StaticTransform, Invertible):
         self.transforms["behavior"] = lambda x: x
         self.transforms["pupil_center"] = lambda x: x
         self.transforms["trial_idx"] = lambda x: x
+        
+        # additional variables that can be included in the batch and should not be modified
+        self.transforms["trial_id"] = lambda x: x
 
     def __call__(self, x):
 
@@ -422,6 +425,11 @@ class AddBehaviorAsChannels(MovieTransform, StaticTransform, Invertible):
             dd["pupil_center"] = self.transforms["pupil_center"](key_vals["pupil_center"])
         if "trial_idx" in key_vals:
             dd["trial_idx"] = self.transforms["trial_idx"](key_vals["trial_idx"])
+            
+        # optional variables that can be included in the batch
+        if "trial_id" in key_vals:
+            dd["trial_id"] = self.transforms["trial_id"](key_vals["trial_id"])
+        
         return x.__class__(**dd)
 
 
