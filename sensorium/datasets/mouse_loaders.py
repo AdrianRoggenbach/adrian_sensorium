@@ -50,6 +50,7 @@ def static_loader(
     include_px_position=None,
     image_reshape_list=None,
     trial_idx_selection=None,
+    preload_from_merged_data=False,
 ):
     """
     returns a single data loader
@@ -74,7 +75,9 @@ def static_loader(
         select_input_channel (int, optional): Only for color images. Select a color channel
         file_tree (bool, optional): whether to use the file tree dataset format. If False, equivalent to the HDF5 format
         image_condition (str, or list of str, optional): selection of images based on the image condition
-
+        preload_from_merged_data (bool, optional): Parameter to use data from .npy matrix with all trials instead of
+                                                   indiviual files to speed up first run through the data
+                                                
     Returns:
         if get_key is False returns a dictionary of dataloaders for one dataset, where the keys are 'train', 'validation', and 'test'.
         if get_key is True it returns the data_key (as the first output) followed by the dataloder dictionary.
@@ -120,6 +123,8 @@ def static_loader(
 
     if file_tree:
         dat = FileTreeDataset(path, *data_keys)
+        if preload_from_merged_data:
+            dat.load_data_to_cache()
     else:
         dat = StaticImageSet(path, *data_keys)
 
@@ -308,6 +313,7 @@ def static_loaders(
     include_px_position=None,
     image_reshape_list=None,
     trial_idx_selection=None,
+    preload_from_merged_data=False,
 ):
     """
     Returns a dictionary of dataloaders (i.e., trainloaders, valloaders, and testloaders) for >= 1 dataset(s).
@@ -336,7 +342,9 @@ def static_loaders(
         scale(float, optional): scalar factor for the image resolution.
             scale = 1: full iamge resolution (144 x 256)
             scale = 0.25: resolution used for model training (36 x 64)
-
+        add_trial_idx_to_batch (bool, optional): return the trial index of the samples with the batch data
+        preload_from_merged_data (bool, optional): Parameter to use data from .npy matrix with all trials instead of
+                                                   indiviual files to speed up first run through the data
     Returns:
         dict: dictionary of dictionaries where the first level keys are 'train', 'validation', and 'test', and second level keys are data_keys.
     """
@@ -390,6 +398,7 @@ def static_loaders(
             include_px_position=include_px_position,
             image_reshape_list=image_reshape_list,
             trial_idx_selection=trial_idx_selection,
+            preload_from_merged_data=preload_from_merged_data,
         )
         for k in dls:
             dls[k][out[0]] = out[1][k]

@@ -4,6 +4,7 @@ from collections import namedtuple
 from datetime import datetime
 from pathlib import Path
 from zipfile import ZipFile
+import os
 
 import numpy as np
 from torch.utils.data import Dataset
@@ -437,6 +438,28 @@ class FileTreeDatasetBase(TransformDataset):
 
         return x
 
+    def load_data_to_cache(self):
+        """ Load all data into the cache based on .npy matricies in folder 'merged_data'
+        
+        This function is created to speed up the process to load the individual files, which
+        can take >10 minutes on Piz Daint
+        
+        Adrian 2022-09-24 """
+        
+        merged_data_folder = os.path.join(self.dirname, 'merged_data')
+        if not os.path.exists( merged_data_folder ):
+            raise Exception(
+                "The merged_data folder has not been created yet. Use preload_from_merged_data=False "
+                "or create this folder with the notebook create_merged_data_for_dataloader.ipynb"
+            )
+        for data_key in self.data_keys:
+            file_name = os.path.join(merged_data_folder, '{}.npy'.format(data_key))
+            data = np.load( file_name )  # matrix with shape: (nr_trials, *)
+            
+            # add the individual trials to the cache
+            for trial in range( data.shape[0] ):
+                self._cache[data_key][trial] = data[trial]
+            
 
     def add_log_entry(self, msg):
         """
