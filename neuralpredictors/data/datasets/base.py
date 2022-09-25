@@ -437,6 +437,7 @@ class FileTreeDatasetBase(TransformDataset):
 
         return x
 
+
     def add_log_entry(self, msg):
         """
         Add a new log entry `msg` into the "change.log" file. The message will be timestamped

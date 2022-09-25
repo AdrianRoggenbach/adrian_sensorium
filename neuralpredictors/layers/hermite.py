@@ -2,7 +2,6 @@ import math
 
 import numpy as np
 import torch
-import torch.nn.functional as F
 from numpy import pi
 from numpy.polynomial.polynomial import polyval
 from scipy.special import gamma
@@ -119,9 +118,9 @@ class RotateHermite(nn.Module):
         self.first_layer = first_layer
 
     def forward(self, coeffs):
-        num_inputs_total = coeffs.shape[1]  # num_coeffs, num_inputs_total, num_outputs
+        num_coeffs, num_inputs_total, num_outputs = coeffs.shape
+        filter_size = self.H.shape[1]
         num_inputs = num_inputs_total // self.num_rotations
-
         weights_rotated = []
         for i, R in enumerate(self.Rs):
             coeffs_rotated = torch.tensordot(R, coeffs, dims=([1], [0]))
@@ -131,7 +130,6 @@ class RotateHermite(nn.Module):
                 w = torch.cat([w[:, :, shift:, :], w[:, :, :shift, :]], dim=2)
             weights_rotated.append(w)
         weights_all_rotations = torch.cat(weights_rotated, dim=3)
-
         return weights_all_rotations
 
 
@@ -166,15 +164,15 @@ class HermiteConv2D(nn.Module):
             first_layer=first_layer,
         )
 
-    @property
-    def weights_all_rotations(self):
+        self.weights_all_rotations = None
+
+    def forward(self, input):
         weights_all_rotations = self.rotate_hermite(self.coeffs)
         weights_all_rotations = downsample_weights(weights_all_rotations, self.upsampling)
         weights_all_rotations = weights_all_rotations.permute(3, 2, 0, 1)
-        return weights_all_rotations
+        self.weights_all_rotations = weights_all_rotations
 
-    def forward(self, input):
-        return F.conv2d(
+        return nn.functional.conv2d(
             input=input,
             weight=self.weights_all_rotations,
             bias=None,
@@ -211,7 +209,7 @@ class RotationEquivariantBatchNorm2D(nn.Module):
 
     def forward(self, input):
         s = input.shape
-        input = self.reshape(input, s)  # rotations will share BN parameters for each channel
+        input = self.reshape(input, s)
         output = self.batch_norm(input)
         output = self.inv_reshape(output, s)
         return output
