@@ -414,6 +414,7 @@ class AddBehaviorAsChannels(MovieTransform, StaticTransform, Invertible):
         self.transforms["trial_id"] = lambda x: x
         self.transforms["history"] = lambda x: x
         self.transforms["gain"] = lambda x: x
+        self.transforms["state"] = lambda x: x
 
     def __call__(self, x):
 
@@ -435,6 +436,8 @@ class AddBehaviorAsChannels(MovieTransform, StaticTransform, Invertible):
             dd["history"] = self.transforms["history"](key_vals["history"])
         if "gain" in key_vals:
             dd["gain"] = self.transforms["gain"](key_vals["gain"])
+        if "state" in key_vals:
+            dd["state"] = self.transforms["state"](key_vals["state"])
         
         return x.__class__(**dd)
 

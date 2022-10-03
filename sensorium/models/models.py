@@ -176,7 +176,7 @@ def modulated_stacked_core_full_gauss_readout(
                                                   nr_history=5,
                                                   per_neuron_gain_adjust=False,
                                                   behav_state=True,
-                                                  nr_hidden_behav_state=3,
+                                                  nr_hidden_behav_state=10,
                                                   )
     else:
         modulator=None

@@ -29,23 +29,17 @@ class HistoryGainModulator(nn.Module):
         self.history_bias = nn.parameter.Parameter( bias )
         
         if self.behav_state:
-            # reduced-rank matrix (nr_neurons, nr_hidden_behav_state)
-            max_val = np.sqrt( 1/nr_neurons )
-            weights = torch.rand( (nr_neurons,nr_hidden_behav_state) ) * (2*max_val) - max_val  
-            self.reduced_rank_weights = nn.parameter.Parameter( weights )
-            
-            # readout matrix indiviual for each neuron (nr_hidden_behav_state, nr_neurons)
-            max_val = np.sqrt( 1/nr_hidden_behav_state )
-            weights = torch.rand( (nr_hidden_behav_state, nr_neurons) ) * (2*max_val) - max_val 
-            bias = torch.rand( nr_neurons ) * (2*max_val) - max_val
-            self.rr_readout_weights = nn.parameter.Parameter( weights )
-            self.rr_readout_bias = nn.parameter.Parameter( bias )
+            # linear layer from hidden states to neurons
+            self.state_encoder = nn.Linear( in_features=nr_hidden_behav_state,
+                                            out_features=nr_neurons,
+                                            bias=True )
             
             
-    def forward(self, x, history, gain):
+    def forward(self, x, history, gain, state):
         # x: (batch, nr_neurons) Output of the encoding model which uses images+behavior
         # history: (batch, nr_neurons, nr_lags)
         # gain: (batch, 1)
+        # state: (batch, nr_states)
         
         # compute effect of history
         hist = torch.einsum( 'bnh,nh->bn', history, self.history_weights )
@@ -54,11 +48,8 @@ class HistoryGainModulator(nn.Module):
         
         # compute reduced-rank prediction from last available timestep
         if self.behav_state:
-            last_response = history[:,:,0]   # first entry is lag -1
-            reduced_rank = torch.einsum( 'bn,nh->bh', last_response, self.reduced_rank_weights)
-            per_neuron_output = torch.einsum( 'bh,hn->bn', reduced_rank, self.rr_readout_weights)
-            # per_neuron_output = per_neuron_output + self.rr_readout_bias
-            x = x + per_neuron_output
+            state_mod = self.state_encoder( state )
+            x = x + state_mod
             
         # non-linearity
         x = nn.functional.elu(x) + 1

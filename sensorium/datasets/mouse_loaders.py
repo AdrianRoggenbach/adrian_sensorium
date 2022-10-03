@@ -55,6 +55,7 @@ def static_loader(
     include_trial_id=False,
     include_history=False,
     include_gain=False,
+    include_behav_state=False,
 ):
     """
     returns a single data loader
@@ -135,6 +136,9 @@ def static_loader(
     if include_gain:
         data_keys.append("gain")
         exclude.append('gain')  # exclude it from normalization
+    if include_behav_state:
+        data_keys.append("state")
+        exclude.append('state')  # exclude it from normalization
 
     if file_tree:
         dat = FileTreeDataset(path, *data_keys)
@@ -333,6 +337,7 @@ def static_loaders(
     include_trial_id=False,
     include_history=False,
     include_gain=False,
+    include_behav_state=False,
 ):
     """
     Returns a dictionary of dataloaders (i.e., trainloaders, valloaders, and testloaders) for >= 1 dataset(s).
@@ -424,6 +429,7 @@ def static_loaders(
             include_trial_id=include_trial_id,
             include_history=include_history,
             include_gain=include_gain,
+            include_behav_state=include_behav_state,
         )
         for k in dls:
             dls[k][out[0]] = out[1][k]
