@@ -55,8 +55,8 @@ def modulated_stacked_core_full_gauss_readout(
     shifter_bias=True,
     hidden_padding=None,
     core_bias=False,
-    with_history=False,
-    with_gain=False,
+    with_modulator=False,
+    modulator_params=dict(),
 ):
     """
     Model class of a stacked2dCore (from neuralpredictors) and a pointpooled (spatial transformer) readout
@@ -166,17 +166,14 @@ def modulated_stacked_core_full_gauss_readout(
                 bias=shifter_bias,
                 gamma_shifter=gamma_shifter,
             )
-    if with_history or with_gain:
+    if with_modulator:
         modulator = nn.ModuleDict()
         
         # add entries for each key
         for key in data_keys:
             nr_neurons = n_neurons_dict[key]
             modulator[key] = HistoryGainModulator(nr_neurons=nr_neurons,
-                                                  nr_history=5,
-                                                  per_neuron_gain_adjust=False,
-                                                  behav_state=True,
-                                                  nr_hidden_behav_state=10,
+                                                  **modulator_params,
                                                   )
     else:
         modulator=None

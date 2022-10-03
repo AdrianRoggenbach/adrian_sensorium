@@ -1,0 +1,16 @@
+#!/bin/bash -l
+#SBATCH --job-name="Train Model"
+#SBATCH --account="ich032"
+#SBATCH --time=05:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-core=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=24
+#SBATCH --partition=normal
+#SBATCH --constraint=gpu
+
+module load daint-gpu cray-python jupyter-utils matplotlib PyTorch
+source /users/bp000429/env_sensorium/bin/activate
+
+cd /scratch/snx3000/bp000429/adrian_sensorium/scripts
+srun python train_model.py -m $1 &> ../saved_models/03_log_files/$1.txt

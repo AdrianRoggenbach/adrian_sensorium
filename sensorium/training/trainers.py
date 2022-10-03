@@ -40,6 +40,7 @@ def standard_trainer(
     cb=None,
     track_training=False,
     detach_core=False,
+    disable_tqdm=False,
     **kwargs
 ):
     """
@@ -184,6 +185,7 @@ def standard_trainer(
             enumerate(LongCycler(dataloaders["train"])),
             total=n_iterations,
             desc="Epoch {}".format(epoch),
+            disable=disable_tqdm,
         ):
 
             batch_args = list(data)

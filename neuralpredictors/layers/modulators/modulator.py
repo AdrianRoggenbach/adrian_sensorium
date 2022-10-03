@@ -5,16 +5,20 @@ import numpy as np
 
 
 class HistoryGainModulator(nn.Module):
-    def __init__(self, nr_neurons, nr_history=5,
+    def __init__(self, nr_neurons,
+                 include_gain=False,
+                 include_history=True,
+                 nr_history=5,
                  per_neuron_gain_adjust=False,
                  behav_state=False,
-                 nr_hidden_behav_state=10,
+                 nr_behav_state=10,
                  ):
         super().__init__()
         # save parameter
+        self.include_gain = include_gain
+        self.include_history = include_history
         self.per_neuron_gain_adjust = per_neuron_gain_adjust
         self.behav_state = behav_state
-        self.nr_hidden_behav_state = nr_hidden_behav_state
         
         if self.per_neuron_gain_adjust:
             # initialize all with 1
@@ -30,7 +34,7 @@ class HistoryGainModulator(nn.Module):
         
         if self.behav_state:
             # linear layer from hidden states to neurons
-            self.state_encoder = nn.Linear( in_features=nr_hidden_behav_state,
+            self.state_encoder = nn.Linear( in_features=nr_behav_state,
                                             out_features=nr_neurons,
                                             bias=True )
             
@@ -41,11 +45,12 @@ class HistoryGainModulator(nn.Module):
         # gain: (batch, 1)
         # state: (batch, nr_states)
         
-        # compute effect of history
-        hist = torch.einsum( 'bnh,nh->bn', history, self.history_weights )
-        hist = hist + self.history_bias
-        x = x + hist    # add history and image response
-        
+        if self.include_history:
+            # compute effect of history
+            hist = torch.einsum( 'bnh,nh->bn', history, self.history_weights )
+            hist = hist + self.history_bias
+            x = x + hist    # add history and image response
+
         # compute reduced-rank prediction from last available timestep
         if self.behav_state:
             state_mod = self.state_encoder( state )
@@ -54,12 +59,13 @@ class HistoryGainModulator(nn.Module):
         # non-linearity
         x = nn.functional.elu(x) + 1
         
-        # multiply response with a gain factor
-        # if self.per_neuron_gain_adjust:
-        #     #           (batch, 1)   (batch,1)  (batch,nr_neurons)
-        #     x = (1 + self.gain_adjust * gain)  *   x  
-        # else:
-        #     x = (1 + gain) * x 
+        if self.include_gain:
+            # multiply response with a gain factor
+            if self.per_neuron_gain_adjust:
+                #           (batch, 1)   (batch,1)  (batch,nr_neurons)
+                x = (1 + self.gain_adjust * gain)  *   x  
+            else:
+                x = (1 + gain) * x 
             
         return x
         
