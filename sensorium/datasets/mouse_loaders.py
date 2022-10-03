@@ -53,6 +53,8 @@ def static_loader(
     trial_idx_selection=None,
     preload_from_merged_data=False,
     include_trial_id=False,
+    include_history=False,
+    include_gain=False,
 ):
     """
     returns a single data loader
@@ -127,6 +129,12 @@ def static_loader(
     if include_trial_id:
         data_keys.append("trial_id")
         exclude.append('trial_id')  # exclude it from normalization
+    if include_history:
+        data_keys.append("history")
+        exclude.append('history')  # exclude it from normalization
+    if include_gain:
+        data_keys.append("gain")
+        exclude.append('gain')  # exclude it from normalization
 
     if file_tree:
         dat = FileTreeDataset(path, *data_keys)
@@ -323,6 +331,8 @@ def static_loaders(
     trial_idx_selection=None,
     preload_from_merged_data=False,
     include_trial_id=False,
+    include_history=False,
+    include_gain=False,
 ):
     """
     Returns a dictionary of dataloaders (i.e., trainloaders, valloaders, and testloaders) for >= 1 dataset(s).
@@ -412,6 +422,8 @@ def static_loaders(
             trial_idx_selection=trial_idx_selection,
             preload_from_merged_data=preload_from_merged_data,
             include_trial_id=include_trial_id,
+            include_history=include_history,
+            include_gain=include_gain,
         )
         for k in dls:
             dls[k][out[0]] = out[1][k]

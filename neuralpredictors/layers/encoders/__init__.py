@@ -1,1 +1,2 @@
 from .firing_rate import FiringRateEncoder
+from .firing_rate import ModulatedFiringRateEncoder
