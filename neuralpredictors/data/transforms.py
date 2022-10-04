@@ -316,7 +316,9 @@ class NeuroNormalizer(MovieTransform, StaticTransform, Invertible):
             1% of the mean std (to avoid division by 0)
     """
 
-    def __init__(self, data, stats_source="all", exclude=None, inputs_mean=None, inputs_std=None):
+    def __init__(self, data, stats_source="all", exclude=None,
+                 inputs_mean=None, inputs_std=None,
+                 adjusted_normalization=True):
 
         self.exclude = exclude or []
 
@@ -360,12 +362,36 @@ class NeuroNormalizer(MovieTransform, StaticTransform, Invertible):
             itransforms[eye_name] = lambda x: x * self._eye_std + self._eye_mean
 
         if "behavior" in data.data_keys:
-            s = np.array(data.statistics["behavior"][stats_source]["std"])
+            if adjusted_normalization == False:
+                s = np.array(data.statistics["behavior"][stats_source]["std"])
 
-            self._behavior_precision = 1 / s
-            # -- behavior
-            transforms["behavior"] = lambda x: x * self._behavior_precision
-            itransforms["behavior"] = lambda x: x / self._behavior_precision
+                self._behavior_precision = 1 / s
+                # -- behavior
+                transforms["behavior"] = lambda x: x * self._behavior_precision
+                itransforms["behavior"] = lambda x: x / self._behavior_precision
+                
+            else:
+                # define normalization different for each behavior variable
+                def normalize_behav(x,
+                   mins=data.statistics['behavior']['all']['min'],
+                   maxs=data.statistics['behavior']['all']['max'],
+                   stds=data.statistics['behavior']['all']['std']):
+                    
+                    # x is array with 3 entries
+                    # first entry is the pupil, normalize to values between -1 and 1
+                    x[0] = (x[0] - mins[0]) / (maxs[0]-mins[0]) * 2 - 1
+
+                    # second is dt/t pupil, normalize to std (already mean 0)
+                    x[1] = x[1] / stds[1]
+
+                    # third value is running velocity, take abs value and normalize to max=1
+                    x[2] = np.abs( x[2] ) / np.max( [-mins[2], maxs[2]] )
+
+                    return x
+                
+                transforms["behavior"] = normalize_behav
+                itransforms["behavior"] = None    # not used
+            
 
         self._transforms = transforms
         self._itransforms = itransforms

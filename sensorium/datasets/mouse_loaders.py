@@ -56,6 +56,7 @@ def static_loader(
     include_history=False,
     include_gain=False,
     include_behav_state=False,
+    adjusted_normalization=False,
 ):
     """
     returns a single data loader
@@ -204,7 +205,8 @@ def static_loader(
             more_transforms.insert(
                 0,
                 NeuroNormalizer(
-                    dat, exclude=exclude, inputs_mean=inputs_mean, inputs_std=inputs_std
+                    dat, exclude=exclude, inputs_mean=inputs_mean, inputs_std=inputs_std,
+                    adjusted_normalization=adjusted_normalization,
                 ),
             )
         except:
@@ -338,6 +340,7 @@ def static_loaders(
     include_history=False,
     include_gain=False,
     include_behav_state=False,
+    adjusted_normalization=False,
 ):
     """
     Returns a dictionary of dataloaders (i.e., trainloaders, valloaders, and testloaders) for >= 1 dataset(s).
@@ -430,6 +433,7 @@ def static_loaders(
             include_history=include_history,
             include_gain=include_gain,
             include_behav_state=include_behav_state,
+            adjusted_normalization=adjusted_normalization,
         )
         for k in dls:
             dls[k][out[0]] = out[1][k]
