@@ -57,6 +57,7 @@ def static_loader(
     include_gain=False,
     include_behav_state=False,
     adjusted_normalization=False,
+    use_meangain_instead=False,
 ):
     """
     returns a single data loader
@@ -142,7 +143,8 @@ def static_loader(
         exclude.append('state')  # exclude it from normalization
 
     if file_tree:
-        dat = FileTreeDataset(path, *data_keys)
+        dat = FileTreeDataset(path, *data_keys,
+                             use_meangain_instead=use_meangain_instead)
         if preload_from_merged_data:
             dat.load_data_to_cache()
     else:
@@ -341,6 +343,7 @@ def static_loaders(
     include_gain=False,
     include_behav_state=False,
     adjusted_normalization=False,
+    use_meangain_instead=False,
 ):
     """
     Returns a dictionary of dataloaders (i.e., trainloaders, valloaders, and testloaders) for >= 1 dataset(s).
@@ -434,6 +437,7 @@ def static_loaders(
             include_gain=include_gain,
             include_behav_state=include_behav_state,
             adjusted_normalization=adjusted_normalization,
+            use_meangain_instead=use_meangain_instead,
         )
         for k in dls:
             dls[k][out[0]] = out[1][k]
