@@ -19,6 +19,7 @@ dataset_config:
   include_behav_state: True
   adjusted_normalization: True
   use_meangain_instead: False
+  add_gain_as_channel: True
   
 ### Model
 model_fn: sensorium.models.modulated_stacked_core_full_gauss_readout

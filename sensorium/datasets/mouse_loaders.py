@@ -12,6 +12,7 @@ from neuralpredictors.data.transforms import (
     ToTensor,
     NeuroNormalizer,
     AddBehaviorAsChannels,
+    AddBehaviorAndGainAsChannels,
     SelectInputChannel,
     ScaleInputs,
     AddPupilCenterAsChannels,
@@ -58,6 +59,7 @@ def static_loader(
     include_behav_state=False,
     adjusted_normalization=False,
     use_meangain_instead=False,
+    add_gain_as_channel=False,
 ):
     """
     returns a single data loader
@@ -197,7 +199,12 @@ def static_loader(
         more_transforms.insert(0, AddPupilCenterAsChannels())
 
     if include_behavior and add_behavior_as_channels:
-        more_transforms.insert(0, AddBehaviorAsChannels())
+        if add_gain_as_channel:
+            # add 3 behavior and 1 gain channel
+            more_transforms.insert(0, AddBehaviorAndGainAsChannels())
+        else:
+            # default, add only behavior
+            more_transforms.insert(0, AddBehaviorAsChannels())
 
     if image_reshape_list is not None:
         more_transforms.insert(0, ReshapeImages(image_reshape_list))
@@ -344,6 +351,7 @@ def static_loaders(
     include_behav_state=False,
     adjusted_normalization=False,
     use_meangain_instead=False,
+    add_gain_as_channel=False,
 ):
     """
     Returns a dictionary of dataloaders (i.e., trainloaders, valloaders, and testloaders) for >= 1 dataset(s).
@@ -438,6 +446,7 @@ def static_loaders(
             include_behav_state=include_behav_state,
             adjusted_normalization=adjusted_normalization,
             use_meangain_instead=use_meangain_instead,
+            add_gain_as_channel=add_gain_as_channel,
         )
         for k in dls:
             dls[k][out[0]] = out[1][k]
