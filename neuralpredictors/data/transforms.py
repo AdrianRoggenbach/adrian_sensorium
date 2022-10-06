@@ -433,6 +433,7 @@ class AddBehaviorAsChannels(MovieTransform, StaticTransform, Invertible):
         
         # additional variables that can be included in the batch and should not be modified
         self.transforms["trial_id"] = lambda x: x
+        self.transforms["sort_id"] = lambda x: x
         self.transforms["history"] = lambda x: x
         self.transforms["gain"] = lambda x: x
         self.transforms["state"] = lambda x: x
@@ -453,6 +454,8 @@ class AddBehaviorAsChannels(MovieTransform, StaticTransform, Invertible):
         # optional variables that can be included in the batch
         if "trial_id" in key_vals:
             dd["trial_id"] = self.transforms["trial_id"](key_vals["trial_id"])
+        if "sort_id" in key_vals:
+            dd["sort_id"] = self.transforms["sort_id"](key_vals["sort_id"])
         if "history" in key_vals:
             dd["history"] = self.transforms["history"](key_vals["history"])
         if "gain" in key_vals:
@@ -488,6 +491,7 @@ class AddBehaviorAndGainAsChannels(MovieTransform, StaticTransform, Invertible):
         
         # additional variables that can be included in the batch and should not be modified
         self.transforms["trial_id"] = lambda x: x
+        self.transforms["sort_id"] = lambda x: x
         self.transforms["history"] = lambda x: x
         self.transforms["gain"] = lambda x: x
         self.transforms["state"] = lambda x: x
@@ -509,6 +513,8 @@ class AddBehaviorAndGainAsChannels(MovieTransform, StaticTransform, Invertible):
         # optional variables that can be included in the batch
         if "trial_id" in key_vals:
             dd["trial_id"] = self.transforms["trial_id"](key_vals["trial_id"])
+        if "sort_id" in key_vals:
+            dd["sort_id"] = self.transforms["sort_id"](key_vals["sort_id"])
         if "history" in key_vals:
             dd["history"] = self.transforms["history"](key_vals["history"])
         if "gain" in key_vals:
