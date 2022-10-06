@@ -212,7 +212,7 @@ class FileTreeDatasetBase(TransformDataset):
     _transform_types = (DataTransform,)
 
     def __init__(self, dirname, *data_keys, transforms=None, use_cache=True, output_rename=None, output_dict=False,
-                use_meangain_instead=False,
+                use_meangain_instead=False, use_state_res_instead=False,
                 ):
         """
         Dataset stored as a file tree. The tree needs to have the subdirs data, meta, meta/neurons, meta/statistics,
@@ -305,6 +305,7 @@ class FileTreeDatasetBase(TransformDataset):
         self.output_dict = output_dict
         self.use_cache = use_cache
         self.use_meangain_instead = use_meangain_instead
+        self.use_state_res_instead = use_state_res_instead
         
         if output_rename is None:
             output_rename = {}
@@ -465,6 +466,8 @@ class FileTreeDatasetBase(TransformDataset):
             # hacky switch between gain and meangain for testing
             if self.use_meangain_instead and (data_key=='gain'):
                 data_to_load = 'meangain'
+            elif self.use_state_res_instead and (data_key=='state'):
+                data_to_load = 'state_res'
             else:
                 data_to_load = data_key
             
