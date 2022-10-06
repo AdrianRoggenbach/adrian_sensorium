@@ -6,7 +6,7 @@ from neuralpredictors.utils import get_module_output
 from neuralpredictors.layers.encoders import FiringRateEncoder
 from neuralpredictors.layers.encoders import ModulatedFiringRateEncoder
 from neuralpredictors.layers.shifters import MLPShifter, StaticAffine2dShifter
-from neuralpredictors.layers.modulators import HistoryGainModulator, HistoryOwnGainModulator, HiddenRegressorModulator
+from neuralpredictors.layers.modulators import HistoryGainModulator, HistoryOwnGainModulator
 
 from neuralpredictors.layers.cores import (
     Stacked2dCore,
