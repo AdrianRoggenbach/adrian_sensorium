@@ -428,14 +428,20 @@ class FullGaussian2d(Readout):
                 max=1,
             )  # grid locations in feature space sampled randomly around the mean self.mu
 
-    def init_grid_predictor(self, source_grid, hidden_features=20, hidden_layers=0, final_tanh=False):
+    def init_grid_predictor(self, source_grid, hidden_features=20, hidden_layers=0, nonlinearity='ELU', final_tanh=False):
         self._original_grid = False
         layers = [nn.Linear(source_grid.shape[1], hidden_features if hidden_layers > 0 else 2)]
-
+        if nonlinearity=='ELU':
+            non_lin = nn.ELU
+        elif nonlinearity=='ReLU':
+            non_lin = nn.ReLU
+        else:
+            raise Exception('Unkown non-linearity')
+            
         for i in range(hidden_layers):
             layers.extend(
                 [
-                    nn.ELU(),
+                    non_lin(),
                     nn.Linear(hidden_features, hidden_features if i < hidden_layers - 1 else 2),
                 ]
             )
