@@ -177,7 +177,7 @@ class HistoryOwnGainModulator(nn.Module):
             # smooth one_hot encoding along trial dimension
             # one_hot has shape (batch, 1, nr_trials), interpreted as 1 channel
             # kernel has shape (1, 1, length), one input and one output channel
-            self.gain_kernel.to(device)
+            self.gain_kernel = self.gain_kernel.to(device)
             smooth = nn.functional.conv1d(one_hot, self.gain_kernel, padding='same')
             
             # scalar product between smooth and saved gain vector (along trials)
