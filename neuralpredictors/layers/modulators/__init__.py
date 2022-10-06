@@ -1,1 +1,1 @@
-from .modulator import HistoryGainModulator
+from .modulator import HistoryGainModulator, HistoryOwnGainModulator

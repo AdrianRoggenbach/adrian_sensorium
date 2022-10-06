@@ -1,11 +1,12 @@
 from torch import nn
+import numpy as np
 
 from nnfabrik.utility.nn_helpers import set_random_seed, get_dims_for_loader_dict
 from neuralpredictors.utils import get_module_output
 from neuralpredictors.layers.encoders import FiringRateEncoder
 from neuralpredictors.layers.encoders import ModulatedFiringRateEncoder
 from neuralpredictors.layers.shifters import MLPShifter, StaticAffine2dShifter
-from neuralpredictors.layers.modulators import HistoryGainModulator
+from neuralpredictors.layers.modulators import HistoryGainModulator, HistoryOwnGainModulator, HiddenRegressorModulator
 
 from neuralpredictors.layers.cores import (
     Stacked2dCore,
@@ -56,6 +57,7 @@ def modulated_stacked_core_full_gauss_readout(
     hidden_padding=None,
     core_bias=False,
     with_modulator=False,
+    modulator_type='GainHistory',
     modulator_params=dict(),
 ):
     """
@@ -171,10 +173,23 @@ def modulated_stacked_core_full_gauss_readout(
         
         # add entries for each key
         for key in data_keys:
-            nr_neurons = n_neurons_dict[key]
-            modulator[key] = HistoryGainModulator(nr_neurons=nr_neurons,
-                                                  **modulator_params,
-                                                  )
+            if modulator_type == 'GainHistory':
+                nr_neurons = n_neurons_dict[key]
+                modulator[key] = HistoryGainModulator(nr_neurons=nr_neurons,
+                                                      **modulator_params,
+                                                      )
+            elif modulator_type == 'OwnGain':
+                # TODO: remove hardcoded path
+                path_template = 'notebooks/data/static{}-GrayImageNet-94c6ff995dac583098847cfecd43e7b6/merged_data/trial_id.npy'
+                
+                nr_neurons = n_neurons_dict[key]
+                nr_trials = np.load( path_template.format(key) ).shape[0]
+                modulator[key] = HistoryOwnGainModulator(nr_neurons=nr_neurons,
+                                                         nr_trials=nr_trials,
+                                                         **modulator_params,
+                                                         )
+            else:
+                raise Exception('Unkown modulator_type')
     else:
         modulator=None
     
