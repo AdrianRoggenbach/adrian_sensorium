@@ -371,27 +371,22 @@ class NeuroNormalizer(MovieTransform, StaticTransform, Invertible):
                 itransforms["behavior"] = lambda x: x / self._behavior_precision
                 
             else:
-                # define normalization different for each behavior variable
-                def normalize_behav(x,
-                   mins=data.statistics['behavior']['all']['min'],
-                   maxs=data.statistics['behavior']['all']['max'],
-                   stds=data.statistics['behavior']['all']['std']):
-                    
-                    # x is array with 3 entries
-                    # first entry is the pupil, normalize to values between -1 and 1
-                    x[0] = (x[0] - mins[0]) / (maxs[0]-mins[0]) * 2 - 1
-
-                    # second is dt/t pupil, normalize to std (already mean 0)
-                    x[1] = x[1] / stds[1]
-
-                    # third value is running velocity, take abs value and normalize to max=1
-                    x[2] = np.abs( x[2] ) / np.max( [-mins[2], maxs[2]] )
-
-                    return x
+                # Normalize the behavior regressors more consistently across sessions
+                # Pupil is normalized from 0 to 1 based on min and max
+                # dt/t pupil is normalized to std=1  (already mean 0)
+                # Running: absolute value of speed is scaled to 0 to 1
                 
-                transforms["behavior"] = normalize_behav
-                itransforms["behavior"] = None    # not used
-            
+                mins=data.statistics['behavior']['all']['min']
+                maxs=data.statistics['behavior']['all']['max']
+                stds=data.statistics['behavior']['all']['std']
+                
+                transforms["behavior"] = lambda x: np.array( [ 
+                                        (x[0] - mins[0]) / (maxs[0]-mins[0]),
+                                         x[1] / stds[1],
+                                         np.abs( x[2] ) / np.max( [-mins[2], maxs[2]] ),
+                                        ] )
+                itransforms["behavior"] = lambda x: np.nan    # not used
+  
 
         self._transforms = transforms
         self._itransforms = itransforms
@@ -524,6 +519,61 @@ class AddBehaviorAndGainAsChannels(MovieTransform, StaticTransform, Invertible):
         return x.__class__(**dd)
 
     
+class AddOnlyPupilAsChannels(MovieTransform, StaticTransform, Invertible):
+    """
+    Given a StaticImage object that includes "images", "responses", and "behavior", it returns three variables:
+        - input image concatinated with behavior as new channel(s)
+        - responses
+        - behavior
+    """
+
+    def __init__(self):
+        self.transforms, self.itransforms = {}, {}
+        self.transforms["images"] = lambda img, behavior: np.concatenate(
+            (
+                img,
+                np.ones((1, *img.shape[-(len(img.shape) - 1) :]))
+                * np.expand_dims(behavior[0:1], axis=((len(img.shape) - 2), (len(img.shape) - 1))),
+            ),
+            axis=len(img.shape) - 3,
+        )
+        self.transforms["responses"] = lambda x: x
+        self.transforms["behavior"] = lambda x: x
+        self.transforms["pupil_center"] = lambda x: x
+        self.transforms["trial_idx"] = lambda x: x
+        
+        # additional variables that can be included in the batch and should not be modified
+        self.transforms["trial_id"] = lambda x: x
+        self.transforms["history"] = lambda x: x
+        self.transforms["gain"] = lambda x: x
+        self.transforms["state"] = lambda x: x
+
+    def __call__(self, x):
+
+        key_vals = {k: v for k, v in zip(x._fields, x)}
+        dd = {
+            "images": self.transforms["images"](key_vals["images"], key_vals["behavior"]),
+            "responses": self.transforms["responses"](key_vals["responses"]),
+            "behavior": self.transforms["behavior"](key_vals["behavior"]),
+        }
+        if "pupil_center" in key_vals:
+            dd["pupil_center"] = self.transforms["pupil_center"](key_vals["pupil_center"])
+        if "trial_idx" in key_vals:
+            dd["trial_idx"] = self.transforms["trial_idx"](key_vals["trial_idx"])
+            
+        # optional variables that can be included in the batch
+        if "trial_id" in key_vals:
+            dd["trial_id"] = self.transforms["trial_id"](key_vals["trial_id"])
+        if "history" in key_vals:
+            dd["history"] = self.transforms["history"](key_vals["history"])
+        if "gain" in key_vals:
+            dd["gain"] = self.transforms["gain"](key_vals["gain"])
+        if "state" in key_vals:
+            dd["state"] = self.transforms["state"](key_vals["state"])
+        
+        return x.__class__(**dd)
+
+
 class AddPupilCenterAsChannels(MovieTransform, StaticTransform, Invertible):
     """
     Given a StaticImage object that includes "images", "responses", and "pupil center", it returns three variables:
