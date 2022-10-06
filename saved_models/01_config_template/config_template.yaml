@@ -20,6 +20,7 @@ dataset_config:
   adjusted_normalization: True
   use_meangain_instead: False
   add_gain_as_channel: True
+  use_state_res_instead: False
   
 ### Model
 model_fn: sensorium.models.modulated_stacked_core_full_gauss_readout
@@ -52,6 +53,7 @@ model_config:
     per_neuron_gain_adjust: False
     behav_state: True
     nr_behav_state: 10
+    behav_alpha: 0
   
 ### Trainer
 trainer_fn: sensorium.training.standard_trainer
