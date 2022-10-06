@@ -13,6 +13,7 @@ from neuralpredictors.data.transforms import (
     NeuroNormalizer,
     AddBehaviorAsChannels,
     AddBehaviorAndGainAsChannels,
+    AddOnlyPupilAsChannels,
     SelectInputChannel,
     ScaleInputs,
     AddPupilCenterAsChannels,
@@ -60,6 +61,7 @@ def static_loader(
     adjusted_normalization=False,
     use_meangain_instead=False,
     add_gain_as_channel=False,
+    use_state_res_instead=False,
 ):
     """
     returns a single data loader
@@ -146,7 +148,8 @@ def static_loader(
 
     if file_tree:
         dat = FileTreeDataset(path, *data_keys,
-                             use_meangain_instead=use_meangain_instead)
+                             use_meangain_instead=use_meangain_instead,
+                             use_state_res_instead=use_state_res_instead)
         if preload_from_merged_data:
             dat.load_data_to_cache()
     else:
@@ -352,6 +355,7 @@ def static_loaders(
     adjusted_normalization=False,
     use_meangain_instead=False,
     add_gain_as_channel=False,
+    use_state_res_instead=False,
 ):
     """
     Returns a dictionary of dataloaders (i.e., trainloaders, valloaders, and testloaders) for >= 1 dataset(s).
@@ -447,6 +451,7 @@ def static_loaders(
             adjusted_normalization=adjusted_normalization,
             use_meangain_instead=use_meangain_instead,
             add_gain_as_channel=add_gain_as_channel,
+            use_state_res_instead=use_state_res_instead,
         )
         for k in dls:
             dls[k][out[0]] = out[1][k]
