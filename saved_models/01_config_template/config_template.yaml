@@ -14,6 +14,7 @@ dataset_config:
   scale: 0.25
   preload_from_merged_data: True
   include_trial_id: True
+  include_sort_id: True
   include_history: True
   include_gain: True
   include_behav_state: True
@@ -46,6 +47,7 @@ model_config:
   gauss_type: full
   shifter: True
   with_modulator: True
+  modulator_type: GainHistory
   modulator_params:
     include_gain: True
     include_history: True
