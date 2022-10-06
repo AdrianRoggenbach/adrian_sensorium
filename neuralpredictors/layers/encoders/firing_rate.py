@@ -62,7 +62,7 @@ class ModulatedFiringRateEncoder(nn.Module):
         if self.shifter:
             reg += self.shifter.regularizer(data_key=data_key)
         if self.modulator:
-            reg += self.modulator.regularizer(data_key=data_key)
+            reg += self.modulator[data_key].regularizer()
         return reg
 
 
