@@ -22,7 +22,7 @@ import shutil
 import warnings
 warnings.filterwarnings('ignore')
 from nnfabrik.builder import get_data, get_model, get_trainer
-from sensorium.utility.training import read_config, print_t
+from sensorium.utility.training import read_config, print_t, set_seed
 
 # read command line arguments
 parser = argparse.ArgumentParser()
@@ -42,6 +42,7 @@ config = read_config( config_file )
 if config['verbose'] > 0:
     print_t('Loading data for "{}"'.format(model_name))
 
+set_seed( config['model_seed'] )  # seed all random generators
 
 #####################################
 ## DATALOADER
