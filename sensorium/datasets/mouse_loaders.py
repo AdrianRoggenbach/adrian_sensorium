@@ -55,7 +55,7 @@ def static_loader(
     trial_idx_selection=None,
     preload_from_merged_data=False,
     include_trial_id=False,
-    include_sort_id=False,
+    include_rank_id=False,
     include_history=False,
     include_gain=False,
     include_behav_state=False,
@@ -137,9 +137,9 @@ def static_loader(
     if include_trial_id:
         data_keys.append("trial_id")
         exclude.append('trial_id')  # exclude it from normalization
-    if include_sort_id:
-        data_keys.append("sort_id")
-        exclude.append('sort_id')  # exclude it from normalization
+    if include_rank_id:
+        data_keys.append("rank_id")
+        exclude.append('rank_id')  # exclude it from normalization
     if include_history:
         data_keys.append("history")
         exclude.append('history')  # exclude it from normalization
@@ -353,7 +353,7 @@ def static_loaders(
     trial_idx_selection=None,
     preload_from_merged_data=False,
     include_trial_id=False,
-    include_sort_id=False,
+    include_rank_id=False,
     include_history=False,
     include_gain=False,
     include_behav_state=False,
@@ -450,7 +450,7 @@ def static_loaders(
             trial_idx_selection=trial_idx_selection,
             preload_from_merged_data=preload_from_merged_data,
             include_trial_id=include_trial_id,
-            include_sort_id=include_sort_id,
+            include_rank_id=include_rank_id,
             include_history=include_history,
             include_gain=include_gain,
             include_behav_state=include_behav_state,
