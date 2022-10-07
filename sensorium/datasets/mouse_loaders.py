@@ -7,6 +7,9 @@ from torch.utils.data.sampler import SubsetRandomSampler
 from nnfabrik.utility.nn_helpers import set_random_seed
 from neuralpredictors.data.datasets import StaticImageSet, FileTreeDataset
 
+import random
+import torch
+
 from neuralpredictors.data.transforms import (
     Subsample,
     ToTensor,
@@ -313,7 +316,18 @@ def static_loader(
             if tier == "train"
             else SubsetSequentialSampler(subset_idx)
         )
-        dataloaders[tier] = DataLoader(dat, sampler=sampler, batch_size=batch_size)
+        
+        # ensure reproducibility in DataLoader
+        def seed_worker(worker_id):
+            worker_seed = torch.initial_seed() % 2**32
+            np.random.seed(worker_seed)
+            random.seed(worker_seed)
+
+        g = torch.Generator()
+        g.manual_seed(8654)
+
+        dataloaders[tier] = DataLoader(dat, sampler=sampler, batch_size=batch_size,
+                                      worker_init_fn=seed_worker, generator=g)
 
     return (data_key, dataloaders) if get_key else dataloaders
 
