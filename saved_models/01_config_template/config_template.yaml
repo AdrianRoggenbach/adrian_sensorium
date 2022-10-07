@@ -14,14 +14,10 @@ dataset_config:
   scale: 0.25
   preload_from_merged_data: True
   include_trial_id: True
-  include_sort_id: True
+  include_rank_id: True
   include_history: True
-  include_gain: True
   include_behav_state: True
   adjusted_normalization: True
-  use_meangain_instead: False
-  add_gain_as_channel: True
-  use_state_res_instead: False
   
 ### Model
 model_fn: sensorium.models.modulated_stacked_core_full_gauss_readout
@@ -39,15 +35,16 @@ model_config:
   grid_mean_predictor:
     type: cortex
     input_dimensions: 2
-    hidden_layers: 1
-    hidden_features: 30
+    hidden_layers: 4
+    hidden_features: 20
+    nonlinearity: ReLU
     final_tanh: True
   init_sigma: 0.1
   init_mu_range: 0.3
   gauss_type: full
   shifter: True
   with_modulator: True
-  modulator_type: GainHistory
+  modulator_type: 'OwnGain'
   modulator_params:
     include_gain: True
     include_history: True
@@ -56,6 +53,8 @@ model_config:
     behav_state: True
     nr_behav_state: 10
     behav_alpha: 0
+    gain_kernel_std: 10
+    diff_reg: 100
   
 ### Trainer
 trainer_fn: sensorium.training.standard_trainer
