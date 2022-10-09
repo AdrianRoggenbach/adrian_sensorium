@@ -44,18 +44,18 @@ model_config:
   gauss_type: full
   shifter: True
   with_modulator: True
-  modulator_type: 'OwnGain'
+  modulator_type: 'HistoryStateGain'
   modulator_params:
     include_gain: True
+    gain_kernel_std: 30
+    diff_reg: 100
     include_history: True
     nr_history: 5
-    per_neuron_gain_adjust: False
     behav_state: True
     nr_behav_state: 10
-    behav_alpha: 0
-    gain_kernel_std: 10
-    diff_reg: 100
-  
+    per_neuron_gain_adjust: False
+    gain_adjust_alpha: 0
+    
 ### Trainer
 trainer_fn: sensorium.training.standard_trainer
 

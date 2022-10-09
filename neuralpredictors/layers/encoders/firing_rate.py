@@ -32,7 +32,6 @@ class ModulatedFiringRateEncoder(nn.Module):
         shift=None,
         detach_core=False,
         history=None,
-        gain=None,
         state=None,
         rank_id=None,
         **kwargs
@@ -50,7 +49,7 @@ class ModulatedFiringRateEncoder(nn.Module):
 
         if self.modulator:
             # modulator contains non-linearities
-            x = self.modulator[data_key](x, history=history, gain=gain,
+            x = self.modulator[data_key](x, history=history,
                                         state=state, rank_id=rank_id)
         else:
             x = nn.functional.elu(x + self.offset) + 1

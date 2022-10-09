@@ -6,7 +6,7 @@ from neuralpredictors.utils import get_module_output
 from neuralpredictors.layers.encoders import FiringRateEncoder
 from neuralpredictors.layers.encoders import ModulatedFiringRateEncoder
 from neuralpredictors.layers.shifters import MLPShifter, StaticAffine2dShifter
-from neuralpredictors.layers.modulators import HistoryGainModulator, HistoryOwnGainModulator
+from neuralpredictors.layers.modulators import HistoryStateGainModulator
 
 from neuralpredictors.layers.cores import (
     Stacked2dCore,
@@ -173,18 +173,13 @@ def modulated_stacked_core_full_gauss_readout(
         
         # add entries for each key
         for key in data_keys:
-            if modulator_type == 'GainHistory':
-                nr_neurons = n_neurons_dict[key]
-                modulator[key] = HistoryGainModulator(nr_neurons=nr_neurons,
-                                                      **modulator_params,
-                                                      )
-            elif modulator_type == 'OwnGain':
+            if modulator_type == 'HistoryStateGain':
                 # TODO: remove hardcoded path
                 path_template = 'notebooks/data/static{}-GrayImageNet-94c6ff995dac583098847cfecd43e7b6/merged_data/trial_id.npy'
                 
                 nr_neurons = n_neurons_dict[key]
                 nr_trials = np.load( path_template.format(key) ).shape[0]
-                modulator[key] = HistoryOwnGainModulator(nr_neurons=nr_neurons,
+                modulator[key] = HistoryStateGainModulator(nr_neurons=nr_neurons,
                                                          nr_trials=nr_trials,
                                                          **modulator_params,
                                                          )

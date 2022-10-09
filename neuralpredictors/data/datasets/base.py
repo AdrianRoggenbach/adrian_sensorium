@@ -211,9 +211,7 @@ class FileTreeDatasetBase(TransformDataset):
     # specify list of transform types that are acceptable
     _transform_types = (DataTransform,)
 
-    def __init__(self, dirname, *data_keys, transforms=None, use_cache=True, output_rename=None, output_dict=False,
-                use_meangain_instead=False, use_state_res_instead=False,
-                ):
+    def __init__(self, dirname, *data_keys, transforms=None, use_cache=True, output_rename=None, output_dict=False):
         """
         Dataset stored as a file tree. The tree needs to have the subdirs data, meta, meta/neurons, meta/statistics,
         and meta/trials. Please refer to convert_static_h5_dataset_to_folder in neuralpredictors.data.utils for an
@@ -304,8 +302,6 @@ class FileTreeDatasetBase(TransformDataset):
 
         self.output_dict = output_dict
         self.use_cache = use_cache
-        self.use_meangain_instead = use_meangain_instead
-        self.use_state_res_instead = use_state_res_instead
         
         if output_rename is None:
             output_rename = {}
@@ -460,18 +456,10 @@ class FileTreeDatasetBase(TransformDataset):
         if not os.path.exists( merged_data_folder ):
             raise Exception(
                 "The merged_data folder has not been created yet. Use preload_from_merged_data=False "
-                "or create this folder with the notebook create_merged_data_for_dataloader.ipynb"
+                "or create this folder with the notebook 01_create_additinal_variables.ipynb"
             )
-        for data_key in self.data_keys:
-            # hacky switch between gain and meangain for testing
-            if self.use_meangain_instead and (data_key=='gain'):
-                data_to_load = 'meangain'
-            elif self.use_state_res_instead and (data_key=='state'):
-                data_to_load = 'state_res'
-            else:
-                data_to_load = data_key
-            
-            file_name = os.path.join(merged_data_folder, '{}.npy'.format(data_to_load))
+        for data_key in self.data_keys:  
+            file_name = os.path.join(merged_data_folder, '{}.npy'.format(data_key))
             data = np.load( file_name )  # matrix with shape: (nr_trials, *)
             
             # add the individual trials to the cache

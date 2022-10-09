@@ -15,8 +15,6 @@ from neuralpredictors.data.transforms import (
     ToTensor,
     NeuroNormalizer,
     AddBehaviorAsChannels,
-    AddBehaviorAndGainAsChannels,
-    AddOnlyPupilAsChannels,
     SelectInputChannel,
     ScaleInputs,
     AddPupilCenterAsChannels,
@@ -60,12 +58,8 @@ def static_loader(
     include_trial_id=False,
     include_rank_id=False,
     include_history=False,
-    include_gain=False,
     include_behav_state=False,
     adjusted_normalization=False,
-    use_meangain_instead=False,
-    add_gain_as_channel=False,
-    use_state_res_instead=False,
 ):
     """
     returns a single data loader
@@ -146,17 +140,12 @@ def static_loader(
     if include_history:
         data_keys.append("history")
         exclude.append('history')  # exclude it from normalization
-    if include_gain:
-        data_keys.append("gain")
-        exclude.append('gain')  # exclude it from normalization
     if include_behav_state:
         data_keys.append("state")
         exclude.append('state')  # exclude it from normalization
 
     if file_tree:
-        dat = FileTreeDataset(path, *data_keys,
-                             use_meangain_instead=use_meangain_instead,
-                             use_state_res_instead=use_state_res_instead)
+        dat = FileTreeDataset(path, *data_keys)
         if preload_from_merged_data:
             dat.load_data_to_cache()
     else:
@@ -209,12 +198,7 @@ def static_loader(
         more_transforms.insert(0, AddPupilCenterAsChannels())
 
     if include_behavior and add_behavior_as_channels:
-        if add_gain_as_channel:
-            # add 3 behavior and 1 gain channel
-            more_transforms.insert(0, AddBehaviorAndGainAsChannels())
-        else:
-            # default, add only behavior
-            more_transforms.insert(0, AddBehaviorAsChannels())
+        more_transforms.insert(0, AddBehaviorAsChannels())
 
     if image_reshape_list is not None:
         more_transforms.insert(0, ReshapeImages(image_reshape_list))
@@ -369,12 +353,8 @@ def static_loaders(
     include_trial_id=False,
     include_rank_id=False,
     include_history=False,
-    include_gain=False,
     include_behav_state=False,
     adjusted_normalization=False,
-    use_meangain_instead=False,
-    add_gain_as_channel=False,
-    use_state_res_instead=False,
 ):
     """
     Returns a dictionary of dataloaders (i.e., trainloaders, valloaders, and testloaders) for >= 1 dataset(s).
@@ -466,12 +446,8 @@ def static_loaders(
             include_trial_id=include_trial_id,
             include_rank_id=include_rank_id,
             include_history=include_history,
-            include_gain=include_gain,
             include_behav_state=include_behav_state,
             adjusted_normalization=adjusted_normalization,
-            use_meangain_instead=use_meangain_instead,
-            add_gain_as_channel=add_gain_as_channel,
-            use_state_res_instead=use_state_res_instead,
         )
         for k in dls:
             dls[k][out[0]] = out[1][k]

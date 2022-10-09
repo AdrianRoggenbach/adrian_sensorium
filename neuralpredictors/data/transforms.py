@@ -435,7 +435,6 @@ class AddBehaviorAsChannels(MovieTransform, StaticTransform, Invertible):
         self.transforms["trial_id"] = lambda x: x
         self.transforms["rank_id"] = lambda x: x
         self.transforms["history"] = lambda x: x
-        self.transforms["gain"] = lambda x: x
         self.transforms["state"] = lambda x: x
 
     def __call__(self, x):
@@ -458,122 +457,6 @@ class AddBehaviorAsChannels(MovieTransform, StaticTransform, Invertible):
             dd["rank_id"] = self.transforms["rank_id"](key_vals["rank_id"])
         if "history" in key_vals:
             dd["history"] = self.transforms["history"](key_vals["history"])
-        if "gain" in key_vals:
-            dd["gain"] = self.transforms["gain"](key_vals["gain"])
-        if "state" in key_vals:
-            dd["state"] = self.transforms["state"](key_vals["state"])
-        
-        return x.__class__(**dd)
-
-
-class AddBehaviorAndGainAsChannels(MovieTransform, StaticTransform, Invertible):
-    """ Based on AddBehaviorAsChannel (see above)
-    """
-
-    def __init__(self):
-        self.transforms, self.itransforms = {}, {}
-        self.transforms["images"] = lambda img, behavior, gain: np.concatenate(
-            (
-                img,
-                # add behavior
-                np.ones((1, *img.shape[-(len(img.shape) - 1) :]))
-                * np.expand_dims(behavior, axis=((len(img.shape) - 2), (len(img.shape) - 1))),
-                # add gain
-                np.ones((1, *img.shape[-(len(img.shape) - 1) :]))
-                * np.expand_dims(gain, axis=((len(img.shape) - 2), (len(img.shape) - 1))),
-            ),
-            axis=len(img.shape) - 3,
-        )
-        self.transforms["responses"] = lambda x: x
-        self.transforms["behavior"] = lambda x: x
-        self.transforms["pupil_center"] = lambda x: x
-        self.transforms["trial_idx"] = lambda x: x
-        
-        # additional variables that can be included in the batch and should not be modified
-        self.transforms["trial_id"] = lambda x: x
-        self.transforms["rank_id"] = lambda x: x
-        self.transforms["history"] = lambda x: x
-        self.transforms["gain"] = lambda x: x
-        self.transforms["state"] = lambda x: x
-
-    def __call__(self, x):
-
-        key_vals = {k: v for k, v in zip(x._fields, x)}
-        dd = {
-            "images": self.transforms["images"](key_vals["images"],
-                                                key_vals["behavior"], key_vals["gain"]),
-            "responses": self.transforms["responses"](key_vals["responses"]),
-            "behavior": self.transforms["behavior"](key_vals["behavior"]),
-        }
-        if "pupil_center" in key_vals:
-            dd["pupil_center"] = self.transforms["pupil_center"](key_vals["pupil_center"])
-        if "trial_idx" in key_vals:
-            dd["trial_idx"] = self.transforms["trial_idx"](key_vals["trial_idx"])
-            
-        # optional variables that can be included in the batch
-        if "trial_id" in key_vals:
-            dd["trial_id"] = self.transforms["trial_id"](key_vals["trial_id"])
-        if "rank_id" in key_vals:
-            dd["rank_id"] = self.transforms["rank_id"](key_vals["rank_id"])
-        if "history" in key_vals:
-            dd["history"] = self.transforms["history"](key_vals["history"])
-        if "gain" in key_vals:
-            dd["gain"] = self.transforms["gain"](key_vals["gain"])
-        if "state" in key_vals:
-            dd["state"] = self.transforms["state"](key_vals["state"])
-        
-        return x.__class__(**dd)
-
-    
-class AddOnlyPupilAsChannels(MovieTransform, StaticTransform, Invertible):
-    """
-    Given a StaticImage object that includes "images", "responses", and "behavior", it returns three variables:
-        - input image concatinated with behavior as new channel(s)
-        - responses
-        - behavior
-    """
-
-    def __init__(self):
-        self.transforms, self.itransforms = {}, {}
-        self.transforms["images"] = lambda img, behavior: np.concatenate(
-            (
-                img,
-                np.ones((1, *img.shape[-(len(img.shape) - 1) :]))
-                * np.expand_dims(behavior[0:1], axis=((len(img.shape) - 2), (len(img.shape) - 1))),
-            ),
-            axis=len(img.shape) - 3,
-        )
-        self.transforms["responses"] = lambda x: x
-        self.transforms["behavior"] = lambda x: x
-        self.transforms["pupil_center"] = lambda x: x
-        self.transforms["trial_idx"] = lambda x: x
-        
-        # additional variables that can be included in the batch and should not be modified
-        self.transforms["trial_id"] = lambda x: x
-        self.transforms["history"] = lambda x: x
-        self.transforms["gain"] = lambda x: x
-        self.transforms["state"] = lambda x: x
-
-    def __call__(self, x):
-
-        key_vals = {k: v for k, v in zip(x._fields, x)}
-        dd = {
-            "images": self.transforms["images"](key_vals["images"], key_vals["behavior"]),
-            "responses": self.transforms["responses"](key_vals["responses"]),
-            "behavior": self.transforms["behavior"](key_vals["behavior"]),
-        }
-        if "pupil_center" in key_vals:
-            dd["pupil_center"] = self.transforms["pupil_center"](key_vals["pupil_center"])
-        if "trial_idx" in key_vals:
-            dd["trial_idx"] = self.transforms["trial_idx"](key_vals["trial_idx"])
-            
-        # optional variables that can be included in the batch
-        if "trial_id" in key_vals:
-            dd["trial_id"] = self.transforms["trial_id"](key_vals["trial_id"])
-        if "history" in key_vals:
-            dd["history"] = self.transforms["history"](key_vals["history"])
-        if "gain" in key_vals:
-            dd["gain"] = self.transforms["gain"](key_vals["gain"])
         if "state" in key_vals:
             dd["state"] = self.transforms["state"](key_vals["state"])
         
