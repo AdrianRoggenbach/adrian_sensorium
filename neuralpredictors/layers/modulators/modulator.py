@@ -17,6 +17,8 @@ class HistoryStateGainModulator(nn.Module):
                  diff_reg=1000,
                  per_neuron_gain_adjust=False,
                  gain_adjust_alpha=0,
+                 alpha_behav=0,
+                 alpha_hist=0,
                  ):
         
         super().__init__()
@@ -28,7 +30,8 @@ class HistoryStateGainModulator(nn.Module):
         self.diff_reg = diff_reg
         self.per_neuron_gain_adjust = per_neuron_gain_adjust
         self.gain_adjust_alpha = gain_adjust_alpha
-        
+        self.alpha_behav = alpha_behav
+        self.alpha_hist = alpha_hist
         
         if self.include_gain:
             max_val = np.sqrt( 1/nr_trials )
@@ -137,7 +140,15 @@ class HistoryStateGainModulator(nn.Module):
         if self.per_neuron_gain_adjust and (self.gain_adjust_alpha  > 0):
             sparse_gain_coupling = self.gain_coupling.abs().sum() * self.gain_adjust_alpha 
             regularization += sparse_gain_coupling
-
+        
+        if self.alpha_hist > 0:
+            sum_hist = self.history_weights.abs().sum()
+            regularization += sum_hist * self.alpha_hist
+        
+        if self.alpha_behav > 0:
+            sum_behav = self.state_encoder.weight.abs().sum()  # leave bias out
+            regularization += sum_behav * self.alpha_behav
+        
         return regularization
 
         
