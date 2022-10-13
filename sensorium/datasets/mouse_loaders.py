@@ -60,6 +60,8 @@ def static_loader(
     include_history=False,
     include_behav_state=False,
     adjusted_normalization=False,
+    use_ensemble_tier=False,
+    ensemble_nr=0,
 ):
     """
     returns a single data loader
@@ -235,8 +237,16 @@ def static_loader(
     # subsample images
     dataloaders = {}
     keys = [tier] if tier else ["train", "validation", "test", "final_test"]
-    tier_array = dat.trial_info.tiers if file_tree else dat.tiers
-
+    
+    # use ensemble tiers if selected
+    if use_ensemble_tier:
+        print('Loading ensemble tiers for nr', ensemble_nr)
+        ensemble_tier = dat.trial_info.ensemble_tiers
+        tier_array = ensemble_tier[ensemble_nr,:]
+    else:
+        tier_array = dat.trial_info.tiers if file_tree else dat.tiers
+        
+        
     dat_info = dat.info if not file_tree else dat.trial_info
     if "image_id" in dir(dat_info):
         frame_image_id = dat_info.image_id
@@ -355,6 +365,8 @@ def static_loaders(
     include_history=False,
     include_behav_state=False,
     adjusted_normalization=False,
+    use_ensemble_tier=False,
+    ensemble_nr=0,
 ):
     """
     Returns a dictionary of dataloaders (i.e., trainloaders, valloaders, and testloaders) for >= 1 dataset(s).
@@ -448,6 +460,8 @@ def static_loaders(
             include_history=include_history,
             include_behav_state=include_behav_state,
             adjusted_normalization=adjusted_normalization,
+            use_ensemble_tier=use_ensemble_tier,
+            ensemble_nr=ensemble_nr,
         )
         for k in dls:
             dls[k][out[0]] = out[1][k]
