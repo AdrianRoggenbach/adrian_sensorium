@@ -1,0 +1,80 @@
+## configuration file to save model parameter
+
+data_sets:
+- all
+
+### Dataloader
+dataset_fn: sensorium.datasets.static_loaders
+
+dataset_config:
+  normalize: True
+  include_behavior: True
+  include_eye_position: True
+  batch_size: 128
+  scale: 0.25
+  preload_from_merged_data: True
+  include_trial_id: True
+  include_rank_id: True
+  include_history: True
+  include_behav_state: True
+  adjusted_normalization: True
+  use_ensemble_tier: True
+  ensemble_nr: 4
+  
+### Model
+model_fn: sensorium.models.modulated_stacked_core_full_gauss_readout
+model_seed: 104
+model_config:
+  pad_input: False
+  stack: -1
+  layers: 4
+  input_kern: 9
+  gamma_input: 9.8
+  gamma_readout: 0.48
+  hidden_kern: 10
+  hidden_channels: 64
+  depth_separable: True
+  grid_mean_predictor:
+    type: cortex
+    input_dimensions: 2
+    hidden_layers: 4
+    hidden_features: 20
+    nonlinearity: ReLU
+    final_tanh: True
+  init_sigma: 0.14
+  init_mu_range: 0.8
+  gauss_type: full
+  shifter: True
+  with_modulator: True
+  modulator_type: 'HistoryStateGain'
+  modulator_params:
+    include_gain: True
+    gain_kernel_std: 30
+    diff_reg: 100
+    include_history: True
+    nr_history: 5
+    behav_state: True
+    nr_behav_state: 10
+    per_neuron_gain_adjust: True
+    gain_adjust_alpha: 0.3
+    alpha_behav: 0.3
+    alpha_hist: 0.3
+
+use_pretrained_core: False
+pretrained_model_file: no_file
+
+### Trainer
+trainer_fn: sensorium.training.standard_trainer
+
+trainer_config:
+  max_iter: 200
+  verbose: True
+  lr_decay_steps: 4
+  avg_loss: False
+  lr_init: 0.009
+  track_training: True
+  disable_tqdm: True
+  
+verbose: 3
+save_csv: True
+save_predictions_npy: True
