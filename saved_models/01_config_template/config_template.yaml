@@ -18,6 +18,8 @@ dataset_config:
   include_history: True
   include_behav_state: True
   adjusted_normalization: True
+  use_ensemble_tier: False
+  ensemble_nr: 0
   
 ### Model
 model_fn: sensorium.models.modulated_stacked_core_full_gauss_readout
@@ -55,7 +57,14 @@ model_config:
     nr_behav_state: 10
     per_neuron_gain_adjust: False
     gain_adjust_alpha: 0
-    
+    alpha_behav: 0.3
+    alpha_hist: 0.3
+
+### Load pretrained model
+use_pretrained_core: False
+pretrained_model_file: no_file
+
+
 ### Trainer
 trainer_fn: sensorium.training.standard_trainer
 
@@ -65,6 +74,7 @@ trainer_config:
   lr_decay_steps: 4
   avg_loss: False
   lr_init: 0.009
+  detach_core: False
   track_training: True
   disable_tqdm: True
 
