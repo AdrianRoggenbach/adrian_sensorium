@@ -12,5 +12,5 @@
 module load daint-gpu cray-python jupyter-utils matplotlib PyTorch
 source /users/bp000429/env_sensorium/bin/activate
 
-cd /scratch/snx3000/bp000429/adrian_sensorium/scripts
+cd /scratch/snx3000/bp000429/submission/adrian_sensorium/scripts
 srun python train_model.py -m $1 &> ../saved_models/03_log_files/$1.txt

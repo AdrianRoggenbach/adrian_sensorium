@@ -76,6 +76,20 @@ model = get_model(model_fn=model_fn,
                  )
 
 #####################################
+## LOAD PRETRAINED CORE
+######################################
+if config['use_pretrained_core']:
+    save_file = config['pretrained_model_file']
+    pretrained_state_dict = torch.load(save_file)
+    
+    # keep only values of core
+    core_only = {k:v for k, v in pretrained_state_dict.items() if 'core.' in k}
+
+    # set only pretrained core values
+    ret = model.load_state_dict(core_only, strict=False)
+
+
+#####################################
 ## TRAINER
 ######################################
 trainer_fn = config['trainer_fn']   # "sensorium.training.standard_trainer"
