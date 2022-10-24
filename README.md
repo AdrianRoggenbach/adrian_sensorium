@@ -12,42 +12,22 @@ For more information about the competition, vist our [website](https://sensorium
 
 Have a look at our [White paper on arXiv](https://arxiv.org/abs/2206.08666), which describes the dataset and competition in detail.
 
-# Important Dates
-**June 20, 2022**: Start of the competition and data release.
-<br>**Oct 15, 2022**: Submission deadline.
-<br>**Oct 22, 2022**: Validation of all submitted scores completed. Preliminary winners are announced. Rank 1-3 in both competition tracks are contacted to provide the code for their submission.
-<br>**Nov 5, 2022**: Deadline for top-ranked entries to provide the code for their submission.
-<br>**Nov 15, 2022**: Winners contacted to contribute to the competition summary write-up.
+# How to run the code
 
-# Starter-kit
-
-Below we provide a step-by-step guide for getting started with the competition.
-
-## 1. Pre-requisites
-- install [**docker**](https://docs.docker.com/get-docker/) and [**docker-compose**](https://docs.docker.com/compose/install/)
-- install git
-- clone the repo via `git clone https://github.com/sinzlab/sensorium.git`
-
-## 2. Download neural data
-
-You can download the data from [https://gin.g-node.org/cajal/Sensorium2022](https://gin.g-node.org/cajal/Sensorium2022) and place it in `sensorium/notebooks/data`.
-**Note:** Downloading the files all at once as a directory does lead to unfortunate errors. Thus, all datastes have to be downloaded individually.
-
-## 3. Run the example notebooks
-
-### **Start Jupyterlab environment**
-```
-cd sensorium/
-docker-compose run -d -p 10101:8888 jupyterlab
-```
-now, type in `localhost:10101` in your favorite browser, and you are ready to go!
+To reproduce the results of the last submission to the challenge (Model 4) run the notebooks in the folder "notebooks/submission_m4" in the order as indicated by the numbers.
+These notebooks will generate new variables as regressors, fit 5 models with different seeds and test/val splits, and then create the submission file based on the ensemble of these 5 models.
 
 
-## **Competition example notebooks**
-We provide notebooks that illustrate the structure of our data, our baselines models, and how to make a submission to the competition.
-<br>[**Dataset tutorial**](notebooks/dataset_tutorial/): Shows the structure of the data and how to turn it into a PyTorch DataLoader.
-<br>[**Model tutorial**](notebooks/model_tutorial/): How to train and evaluate our baseline models.
-<br>[**Submission tutorial**](notebooks/submission_tutorial/): Use our API to make a submission to our competition.
+# Short description of improvements to the model
+
+The submitted model builds strongly on the model that was provided as a starting point. It uses the core module that learns to predict responses to natural images and behavioral variables (convolutional layers with image+behavior, readout location based on retinotopy, and shifter network). On top of that, a modulator network was implemented that uses information from the neural activity in the past (history, behavioral state, pupil independent gain) to explain larger parts of the single trial variability.
+
+In detail, the following additions were made:
+1. Normalize behavioral regressors more consistently across sessions (0 to 1 scaling instead of standard deviation)
+2. Small changes to hyperparameters (number of kernels, retinotopy network, regularization)
+3. History effects of neurons included (filter bank with different time scales for each neuron individually)
+4. Behavioral state from the last timestep (based on reduced rank regression of next timepoint + non-negative matrix factorization)
+5. Learned gain term that modulates the output (smoothly variying gain as parameter of the model)
+6. Ensemble model to combine the mean of five independent models (different seed and test/val split)
 
 
-If you have any questions, feel free to reach out to us (Contact section on our [website](https://sensorium2022.net/)), or raise an issue here on GitHub!
