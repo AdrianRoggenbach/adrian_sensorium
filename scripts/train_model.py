@@ -5,7 +5,9 @@ Adrian 2022-10-03 """
 print('Running script train_model.py')
 
 import sys, os
-os.chdir('..')
+if 'scripts' in os.getcwd():
+    # change to main directory 
+    os.chdir('..')
 print('Working directory:', os.getcwd() )
 sys.path.insert(0, '.')  # hacky solution for now, TODO: fix
 
