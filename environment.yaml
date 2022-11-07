@@ -1,0 +1,21 @@
+name: adrian_sensorium
+dependencies:
+  - python==3.9
+  - pip
+  - pip:
+    - torch==1.10.1
+    - torchvision==0.11.2
+    - nnfabrik==0.2.1
+    - scikit-image>=0.19.1
+    - lipstick
+    - numpy>=1.22.0
+    - tqdm
+    - pandas
+    - h5py
+    - scipy
+    - ruamel.yaml
+    - datajoint
+    - ipython
+    - ipykernel
+    - jupyter
+    - GitPython
