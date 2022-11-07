@@ -14,7 +14,17 @@ Have a look at our [White paper on arXiv](https://arxiv.org/abs/2206.08666), whi
 
 # How to run the code
 
-To reproduce the results of the last submission to the challenge (Model 4) run the notebooks in the folder "notebooks/submission_m4" in the order as indicated by the numbers.
+Run the following commands to clone the repository, set up a new anaconda environment and start a jupyter notebook:
+```
+git clone https://github.com/AdrianHoffmann/adrian_sensorium.git
+cd adrian_sensorium
+conda env create -f environment.yaml
+conda activate adrian_sensorium
+python -m ipykernel install --user --name env_sensorium
+jupyter notebook
+```
+
+To reproduce the results of the last submission to the challenge (Model 4) run the notebooks in the folder "notebooks/submission_m4" in the order as indicated by the numbers. You might need to change the kernel to "env_sensorium" when starting the notebooks.
 These notebooks will generate new variables as regressors, fit 5 models with different seeds and test/val splits, and then create the submission file based on the ensemble of these 5 models.
 
 
