@@ -5,7 +5,7 @@ class EnsemblePrediction(nn.Module):
     """ Simple ensemble model that pools responses from models """
     
     def __init__(self, model_list, mode='mean'):
-        super(EnsembleModel, self).__init__()
+        super(EnsemblePrediction, self).__init__()
         
         self.model_list = nn.ModuleList( model_list )
         self.mode = mode
