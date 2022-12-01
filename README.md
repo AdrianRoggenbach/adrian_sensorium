@@ -1,16 +1,8 @@
-<a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
-[![hub](https://img.shields.io/badge/powered%20by-hub%20-ff5a1f.svg)](https://github.com/activeloopai/Hub)
+# SENSORIUM+ 2022 Competition
 
-# SENSORIUM 2022 Competition
+This repository contains the code that was used in the SENSORIUM+ competition (Website: https://sensorium2022.net/home) for the winning submission.
 
-![plot](figures/Fig1.png)
-SENSORIUM is a competition on predicting large scale mouse primary visual cortex activity. We will provide large scale datasets of neuronal activity in the visual cortex of mice. Participants will train models on pairs of natural stimuli and recorded neuronal responses, and submit the predicted responses to a set of test images for which responses are withheld.
 
-Join our challenge and compete for the best neural predictive model!
-
-For more information about the competition, vist our [website](https://sensorium2022.net/).
-
-Have a look at our [White paper on arXiv](https://arxiv.org/abs/2206.08666), which describes the dataset and competition in detail.
 
 # How to run the code
 
@@ -27,6 +19,8 @@ jupyter notebook
 To reproduce the results of the last submission to the challenge (Model 4) run the notebooks in the folder "notebooks/submission_m4" in the order as indicated by the numbers. You might need to change the kernel to "env_sensorium" when starting the notebooks.
 These notebooks will generate new variables as regressors, fit 5 models with different seeds and test/val splits, and then create the submission file based on the ensemble of these 5 models.
 
+The code in the current version requires a computer with 32GB RAM and a GPU.
+
 
 # Short description of improvements to the model
 
@@ -41,3 +35,11 @@ In detail, the following additions were made:
 6. Ensemble model to combine the mean of five independent models (different seed and test/val split)
 
 
+# Acknowledgements
+
+This repository contains code from the following repositories:
+- Sensorium baseline model+repository (forked): https://github.com/sinzlab/sensorium
+- Model building blocks from the Sinz lab: https://github.com/sinzlab/neuralpredictors/tree/v0.3.0
+
+
+We acknowledge the use of Fenix Infrastructure resources, which are partially funded from the European Union’s Horizon 2020 research and innovation programme through the ICEI project under the grant agreement No. 800858
