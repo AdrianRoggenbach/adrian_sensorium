@@ -240,7 +240,7 @@ def static_loader(
     
     # use ensemble tiers if selected
     if use_ensemble_tier:
-        print('Loading ensemble tiers for nr', ensemble_nr)
+        # print('Loading ensemble tiers for nr', ensemble_nr)
         ensemble_tier = dat.trial_info.ensemble_tiers
         tier_array = ensemble_tier[ensemble_nr,:]
     else:
