@@ -84,7 +84,11 @@ def standard_trainer(
         )
         regularizers = int(
             not detach_core
-        ) * model.core.regularizer() + model.readout.regularizer(data_key) + model.modulator[data_key].regularizer()
+        ) * model.core.regularizer() + model.readout.regularizer(data_key)
+        
+        if model.modulator is not None: # add modulator regularizer if defined
+            regularizers += model.modulator[data_key].regularizer()
+            
         return (
             loss_scale
             * criterion(
