@@ -40,6 +40,6 @@ In detail, the following additions were made:
 This repository contains code from the following repositories:
 - Sensorium baseline model+repository (forked): https://github.com/sinzlab/sensorium
 - Model building blocks from the Sinz lab: https://github.com/sinzlab/neuralpredictors/tree/v0.3.0
-
+- Rastermap core code from Carsen Stringer and Marius Pachitariu: https://github.com/MouseLand/rastermap
 
 We acknowledge the use of Fenix Infrastructure resources, which are partially funded from the European Union’s Horizon 2020 research and innovation programme through the ICEI project under the grant agreement No. 800858

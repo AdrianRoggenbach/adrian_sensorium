@@ -21,3 +21,4 @@ dependencies:
     - GitPython
     - sklearn
     - seaborn
+    - numba
