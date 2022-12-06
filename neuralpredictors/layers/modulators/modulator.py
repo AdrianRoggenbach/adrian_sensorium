@@ -141,11 +141,11 @@ class HistoryStateGainModulator(nn.Module):
             sparse_gain_coupling = self.gain_coupling.abs().sum() * self.gain_adjust_alpha 
             regularization += sparse_gain_coupling
         
-        if self.alpha_hist > 0:
+        if self.include_history and self.alpha_hist > 0:
             sum_hist = self.history_weights.abs().sum()
             regularization += sum_hist * self.alpha_hist
         
-        if self.alpha_behav > 0:
+        if self.behav_state and self.alpha_behav > 0:
             sum_behav = self.state_encoder.weight.abs().sum()  # leave bias out
             regularization += sum_behav * self.alpha_behav
         
