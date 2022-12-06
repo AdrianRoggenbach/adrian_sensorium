@@ -19,6 +19,8 @@ jupyter notebook
 To reproduce the results of the last submission to the challenge (Model 4) run the notebooks in the folder "notebooks/submission_m4" in the order as indicated by the numbers. You might need to change the kernel to "env_sensorium" when starting the notebooks.
 These notebooks will generate new variables as regressors, fit 5 models with different seeds and test/val splits, and then create the submission file based on the ensemble of these 5 models.
 
+Alternatively, you can also run an updated version of the models by following the notebooks in https://github.com/AdrianHoffmann/adrian_sensorium/tree/main/notebooks/model_walkthrough
+
 The code in the current version requires a computer with 32GB RAM and a GPU.
 
 
