@@ -2,7 +2,7 @@
 
 This repository contains the code that was used in the SENSORIUM+ competition (Website: https://sensorium2022.net/home) for the winning submission.
 
-
+This repository is based on code from https://github.com/sinzlab/sensorium
 
 # How to run the code
 
