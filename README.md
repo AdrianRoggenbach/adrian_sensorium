@@ -4,6 +4,9 @@ This repository contains the code that was used in the SENSORIUM+ competition (W
 
 This repository is based on code from https://github.com/sinzlab/sensorium
 
+Overview of changes compared to baseline model:
+![plot](figures/Sensorium_Improvements_Overview.png)
+
 # How to run the code
 
 Run the following commands to clone the repository, set up a new anaconda environment and start a jupyter notebook:
