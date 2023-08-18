@@ -11,7 +11,7 @@ Overview of changes compared to baseline model:
 
 Run the following commands to clone the repository, set up a new anaconda environment and start a jupyter notebook:
 ```
-git clone https://github.com/AdrianHoffmann/adrian_sensorium.git
+git clone https://github.com/AdrianRoggenbach/adrian_sensorium.git
 cd adrian_sensorium
 conda env create -f environment.yaml
 conda activate adrian_sensorium
